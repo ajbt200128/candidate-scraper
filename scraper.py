@@ -1,77 +1,122 @@
 #!/usr/bin/python
-import requests
-from bs4 import BeautifulSoup
 import argparse
 import pprint
-parser = argparse.ArgumentParser(description='Scrapes candidate issue info')
-parser.add_argument('link', metavar='L', type=str, help="Link of candidate")
-parser.add_argument('issue_pattern', metavar='I', type=str,
-                    help='HTML Element pattern of the issue element e.g. h1>p>a#classname a#classname, or just a#')
-parser.add_argument('description_pattern', metavar='D', type=str,
-                    help='HTML Element pattern of the description element')
-parser.add_argument('--link', action='store',
-                    help='If issue element is link to a page with the description')
+
+import requests
+from bs4 import BeautifulSoup
+
+parser = argparse.ArgumentParser(description="Scrapes candidate issue info")
+parser.add_argument("url", metavar="U", type=str, help="URL of candidate")
+parser.add_argument(
+    "issue_pattern",
+    metavar="I",
+    type=str,
+    help="HTML Element pattern of the issue element e.g. h1>p>a#classname a#classname, or just a#",
+)
+parser.add_argument(
+    "description_pattern",
+    metavar="D",
+    type=str,
+    help="HTML Element pattern of the description element",
+)
+parser.add_argument(
+    "-fl",
+    "--follow-link",
+    dest="follow_link",
+    type=str,
+    required=False,
+    help="If issue element is link to a page with the description",
+)
 args = parser.parse_args()
 pp = pprint.PrettyPrinter(indent=4)
 
 
-def get_page_soup():
-    url = args.link
+def get_page_soup(url):
     headers = {
-        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'}
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36"
+    }
     page = requests.get(url, headers=headers).content
-    return BeautifulSoup(page, 'html.parser')
+    return BeautifulSoup(page, "html.parser")
 
 
-def get_text_by_pattern(soup, pattern):
-    element_names = pattern.split('>')
-    print("Element names ", element_names)
-    class_name = element_names[-1].split('#')[1]
-    element_names[-1] = element_names[-1].split('#')[0]
-    text = []
-    if len(element_names) == 1:
-        elements = soup.find_all(element_names[0], {"class": class_name})
-        for el in elements:
-            el = el.text
-            print(el)
-            text.append(el)
+def get_children(names, elements):
+    for pair in names:
+        children= []
+        for i in range(0, len(elements)):
+            if elements[i] is not None:
+                if pair[1]:
+                    elements[i] = elements[i].findChildren(
+                        pair[0], {"class", pair[1]}, recursive=False
+                    )
+                else:
+                    elements[i] = elements[i].findChildren(pair[0], recursive=False)
+                if elements[i] is not None:
+                    children.extend(elements[i])
+                else:
+                    elements[i] = None
+        elements = children
+        
+    return elements
+
+
+def get_text_by_pattern(soup, pattern, get_link=False):
+    element_names_unformatted = pattern.split(">")
+    element_names = []
+    for el_name in element_names_unformatted:
+        if "#" in el_name:
+            el_parts = el_name.split("#")
+            element_names.append((el_parts[0], el_parts[1]))
+        else:
+            element_names.append((el_name, None))
+
+    elements = None
+    if element_names[0][1]:
+        elements = soup.find_all(element_names[0], {"class": element_names[0][1]})
     else:
         elements = soup.find_all(element_names[0])
-        for name in element_names[1:-1]:
-            for i in range(0, len(elements)):
-                if elements[i] is not None:
-                    elements[i] = elements[i].findChildren(
-                        name, recursive=False)
-                    if elements[i] is not None and len(elements[i]) > 0:
-                        elements[i] = elements[i][0]
-                    else:
-                        elements[i] = None
 
-        elements = list(
-            filter(lambda x: x is not None and len(x) != 0, elements))
-        for el in elements:
-            text_elements = None
-            if not class_name:
-                text_elements = el.findChildren(
-                    element_names[-1], recusive=False)
-            else:
-                text_elements = el.findChildren(
-                    element_names[-1], {'class', class_name}, recursive=False)
-            for text_element in text_elements:
-                text_element = text_element.text
-                text.append(text_element)
+    elements = list(get_children(element_names[1:], elements))
+    elements = list(filter(lambda x: x is not None and len(x) != 0, elements))
 
-    return text
+    wanted = []
+    for el in elements:
+        if not get_link:
+            wanted.append(el.text)
+        else:
+            wanted.append(el["href"])
+    return list(dict.fromkeys(wanted))
+
+
+def get_issues(soup):
+    issues = get_text_by_pattern(soup, args.issue_pattern)
+    return issues
+
+
+def get_descriptions(soup):
+    descriptions = []
+    if args.follow_link:
+        links = get_text_by_pattern(soup, args.follow_link, get_link=True)
+        print(links)
+        for link in links:
+            soup = get_page_soup(link)
+            description = get_text_by_pattern(soup, args.description_pattern)
+            description = '\n'.join(description)
+            descriptions.append(description)
+    else:
+        descriptions = get_text_by_pattern(soup, args.description_pattern)
+    return descriptions
 
 
 def main():
-    soup = get_page_soup()
-    issues = get_text_by_pattern(soup, args.issue_pattern)
-    descriptions = get_text_by_pattern(soup, args.description_pattern)
+    soup = get_page_soup(args.url)
+    issues = get_issues(soup)
+    descriptions = get_descriptions(soup)
     if len(issues) != len(descriptions):
         print("Error: Issue length does not match description length")
-    print(len(issues))
-    print(len(descriptions))
+    print(issues)
+    for desc in descriptions:
+        print(desc)
+        print("======")
 
 
 main()
