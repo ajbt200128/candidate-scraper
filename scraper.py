@@ -128,7 +128,7 @@ def main():
     with open(filename,'w') as csvfile:
         writer = csv.writer(csvfile)
         for i in range(len(issues)):
-            writer.writerow([issues[i], descriptions[i]])
+            writer.writerow([args.name, issues[i], descriptions[i]])
 
 
 main()
