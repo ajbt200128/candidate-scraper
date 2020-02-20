@@ -1,23 +1,25 @@
 #!/usr/bin/python
 import argparse
+import csv
 import pprint
 
 import requests
 from bs4 import BeautifulSoup
 
 parser = argparse.ArgumentParser(description="Scrapes candidate issue info")
+parser.add_argument("name", metavar="N", type=str, help="Name of candidate")
 parser.add_argument("url", metavar="U", type=str, help="URL of candidate")
 parser.add_argument(
     "issue_pattern",
     metavar="I",
     type=str,
-    help="HTML Element pattern of the issue element e.g. h1>p>a#classname a#classname, or just a#",
+    help="HTML Element pattern of the issue element, see README for pattern explanation",
 )
 parser.add_argument(
     "description_pattern",
     metavar="D",
     type=str,
-    help="HTML Element pattern of the description element",
+    help="HTML Element pattern of the description element, see README for pattern explanation",
 )
 parser.add_argument(
     "-fl",
@@ -31,6 +33,7 @@ args = parser.parse_args()
 pp = pprint.PrettyPrinter(indent=4)
 
 
+# Generates beautiful soup object
 def get_page_soup(url):
     headers = {
         "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36"
@@ -39,9 +42,11 @@ def get_page_soup(url):
     return BeautifulSoup(page, "html.parser")
 
 
+# Gets the innermost children of the passed elements given the names where
+# names is a list of pairs of strings (element_name, element_class)
 def get_children(names, elements):
     for pair in names:
-        children= []
+        children = []
         for i in range(0, len(elements)):
             if elements[i] is not None:
                 if pair[1]:
@@ -55,10 +60,11 @@ def get_children(names, elements):
                 else:
                     elements[i] = None
         elements = children
-        
+
     return elements
 
 
+# Returns either the text elements or links in a given soup object by pattern
 def get_text_by_pattern(soup, pattern, get_link=False):
     element_names_unformatted = pattern.split(">")
     element_names = []
@@ -100,7 +106,7 @@ def get_descriptions(soup):
         for link in links:
             soup = get_page_soup(link)
             description = get_text_by_pattern(soup, args.description_pattern)
-            description = '\n'.join(description)
+            description = "\n".join(description)
             descriptions.append(description)
     else:
         descriptions = get_text_by_pattern(soup, args.description_pattern)
@@ -111,12 +117,18 @@ def main():
     soup = get_page_soup(args.url)
     issues = get_issues(soup)
     descriptions = get_descriptions(soup)
-    if len(issues) != len(descriptions):
-        print("Error: Issue length does not match description length")
     print(issues)
     for desc in descriptions:
         print(desc)
         print("======")
+    if len(issues) != len(descriptions):
+        print("Error: Issue length does not match description length")
+        return
+    filename = 'out/'+args.name.replace(' ', '_') + '.csv'
+    with open(filename,'w') as csvfile:
+        writer = csv.writer(csvfile)
+        for i in range(len(issues)):
+            writer.writerow([issues[i], descriptions[i]])
 
 
 main()
