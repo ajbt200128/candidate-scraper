@@ -1,3 +1,4 @@
+#+OPTIONS: ^:nil
 * Documentation
 ** Requirements
    - Python 3.8
@@ -20,7 +21,7 @@
   | U                 | Is the URL                                            | "https://peteaguilar.com/on-the-issues" |
   | I                 | Is the Issue HTML pattern                            | "div#not-secret>h3"                     |
   | D                 | Is the Description HTML pattern                      | "section#article>div#insides"           |
-  | -fl [FOLLOW_LINK] | Is the Description Page link HTML pattern (optional) | "div#tiles>div>a"                       |
+  | -fl [FOLLOW_LINK]  | Is the Description Page link HTML pattern (optional) | "div#tiles>div>a"                       |
    
   The full command looks like this:
 
@@ -63,22 +64,22 @@
     #+end_src
    | Pattern         | Matches                                        |
    |-----------------+------------------------------------------------|
-   | h3              | src_html{<h3 class="climate">Climate</h3>}     |
-   |                 | src_html{<h3 class="education">Education</h3>} |
-   |                 | src_html{<h3>Contact me</h3>}                  |
+   | h3              | ~<h3 class="climate">Climate</h3>~     |
+   |                 | ~<h3 class="education">Education</h3>~ |
+   |                 | ~<h3>Contact me</h3>~                  |
    |-----------------+------------------------------------------------|
-   | div>h3          | src_html{<h3 class="climate">Climate</h3>}     |
-   |                 | src_html{<h3 class="education">Education</h3>} |
-   |                 | src_html{<h3>Contact me</h3>}                  |
+   | div>h3          | ~<h3 class="climate">Climate</h3>~     |
+   |                 | ~<h3 class="education">Education</h3>~ |
+   |                 | ~<h3>Contact me</h3>~                  |
    |-----------------+------------------------------------------------|
-   | h3#bold         | src_html{<h3 class="bold">Education</h3>}      |
-   |                 | src_html{<h3>Contact me</h3>}                  |
+   | h3#bold         | ~<h3 class="bold">Education</h3>~      |
+   |                 | ~<h3>Contact me</h3>~                  |
    |-----------------+------------------------------------------------|
-   | div#issue>h3    | src_html{<h3 class="climate">Climate</h3>}     |
-   |                 | src_html{<h3 class="education">Education</h3>} |
+   | div#issue>h3    | ~<h3 class="climate">Climate</h3>~     |
+   |                 | ~<h3 class="education">Education</h3>~ |
    |-----------------+------------------------------------------------|
-   | div#issue>p     | src_html{<h3 class="climate">Climate</h3>}     |
-   |                 | src_html{<h3 class="education">Education</h3>} |
+   | div#issue>p     | ~<h3 class="climate">Climate</h3>~     |
+   |                 | ~<h3 class="education">Education</h3>~ |
    |-----------------+------------------------------------------------|
    | div#something>p | Nothing                                        |
    |-----------------+------------------------------------------------|
