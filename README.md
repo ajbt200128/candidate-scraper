@@ -41,19 +41,17 @@ The full command looks like this:
 
 ## Output<a id="sec-2-1"></a>
 
-This will output both to the screen, and to \`out/Candidate\_Name.csv\` with the first column being the issue, and the second the description
+This will output both to the screen, and to `out/Candidate_Name.csv` with the first column being the issue, and the second the description
 
 ## HTML patterns<a id="sec-2-2"></a>
 
 An HTML Pattern is made up of 3 parts, an html element type, the class name of the html element, and the separator:
 
-<div class="org-center">
-\`HTML\_ELEMENT\_NAME#CLASS\_NAME>HTML\_ELEMENT\_NAME#CLASS\_NAME>&#x2026;>HTML\_ELEMENT\_NAME#CLASS\_NAME\`
-</div>
+`HTML_ELEMENT_NAME#CLASS_NAME>HTML_ELEMENT_NAME#CLASS_NAME>...>HTML_ELEMENT_NAME#CLASS_NAME`
 
 Where the the seperator denotes the parent to child, I.E. the left element is the parent element, and the right is the child, the rightmost being the element that either a link or text is extracted from. Multiple matches can be returned.
 
-Note: The \`#CLASS\_NAME\` part is optional
+Note: The `#CLASS_NAME` part is optional
 
 ### Example<a id="sec-2-2-1"></a>
 
