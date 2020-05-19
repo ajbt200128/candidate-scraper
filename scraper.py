@@ -87,7 +87,7 @@ def get_text_by_pattern(soup, pattern, get_link=False):
     wanted = []
     for el in elements:
         if not get_link:
-            wanted.append(el.text)
+            wanted.append(el.text.strip())
         else:
             wanted.append(el["href"])
     return list(dict.fromkeys(wanted))
@@ -107,7 +107,7 @@ def get_descriptions(soup):
             soup = get_page_soup(link)
             description = get_text_by_pattern(soup, args.description_pattern)
             description = "\n".join(description)
-            descriptions.append(description)
+            descriptions.append(description.strip())
     else:
         descriptions = get_text_by_pattern(soup, args.description_pattern)
     return descriptions
@@ -115,14 +115,14 @@ def get_descriptions(soup):
 
 def main():
     soup = get_page_soup(args.url)
-    issues = get_issues(soup)
-    descriptions = get_descriptions(soup)
+    issues = list(filter(None, get_issues(soup)))
+    descriptions = list(filter(None, get_descriptions(soup)))
     print(issues)
-    for desc in descriptions:
+    for i,desc in enumerate(descriptions):
+        print(f"======= {i} =======")
         print(desc)
-        print("======")
     if len(issues) != len(descriptions):
-        print("Error: Issue length does not match description length")
+        print(f"Error: Issue length({len(issues)}) does not match description length({len(descriptions)})")
         return
     filename = 'out/'+args.name.replace(' ', '_') + '.csv'
     with open(filename,'w') as csvfile:
