@@ -25,13 +25,14 @@ chmod 777 scraper.py
 
 Where:
 
-| Parameter          | Description                                          | Example                                   |
-|------------------ |---------------------------------------------------- |----------------------------------------- |
-| N                  | Is the name of a candidate                           | "Pete Aguilar"                            |
-| U                  | Is the URL                                           | "<https://peteaguilar.com/on-the-issues>" |
-| I                  | Is the Issue HTML pattern                            | "div#not-secret>h3"                       |
-| D                  | Is the Description HTML pattern                      | "section#article>div#insides"             |
-| -fl [FOLLOW\_LINK] | Is the Description Page link HTML pattern (optional) | "div#tiles>div>a"                         |
+| Parameter          | Description                                                | Example                                   |
+|------------------ |---------------------------------------------------------- |----------------------------------------- |
+| N                  | Is the name of a candidate                                 | "Pete Aguilar"                            |
+| U                  | Is the URL                                                 | "<https://peteaguilar.com/on-the-issues>" |
+| I                  | Is the Issue HTML pattern                                  | "div#not-secret>h3"                       |
+| D                  | Is the Description HTML pattern                            | "section#article>div#insides"             |
+| -fl [FOLLOW\_LINK] | Is the Description Page link HTML pattern (optional)       | "div#tiles>div>a"                         |
+| -f                 | Force the write of whatever issues/descriptions were found | -f                                        |
 
 The full command looks like this:
 

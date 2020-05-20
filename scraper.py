@@ -29,6 +29,14 @@ parser.add_argument(
     required=False,
     help="If issue element is link to a page with the description",
 )
+
+parser.add_argument(
+    "-f",
+    "--force",
+    dest="force",
+    action='store_true',
+    help="Force write to csv"
+)
 args = parser.parse_args()
 pp = pprint.PrettyPrinter(indent=4)
 
@@ -98,12 +106,14 @@ def get_issues(soup):
     return issues
 
 
-def get_descriptions(soup):
+def get_descriptions(soup,url):
     descriptions = []
     if args.follow_link:
         links = get_text_by_pattern(soup, args.follow_link, get_link=True)
         print(links)
         for link in links:
+            if link[0] == "/":
+                link= url.rsplit('/', 1)[0] + link
             soup = get_page_soup(link)
             description = get_text_by_pattern(soup, args.description_pattern)
             description = "\n".join(description)
@@ -116,18 +126,28 @@ def get_descriptions(soup):
 def main():
     soup = get_page_soup(args.url)
     issues = list(filter(None, get_issues(soup)))
-    descriptions = list(filter(None, get_descriptions(soup)))
+    descriptions = list(filter(None, get_descriptions(soup,args.url)))
     print(issues)
     for i,desc in enumerate(descriptions):
         print(f"======= {i} =======")
         print(desc)
-    if len(issues) != len(descriptions):
+    if len(issues) != len(descriptions) and not args.force:
         print(f"Error: Issue length({len(issues)}) does not match description length({len(descriptions)})")
         return
     filename = 'out/'+args.name.replace(' ', '_') + '.csv'
+    length = len(issues)
+    if len(issues) < len(descriptions):
+        length = len(descriptions)
+        while len(issues) < length:
+            issues.append("")
+    else:
+        while len(descriptions) < length:
+            descriptions.append("")
+    
+
     with open(filename,'w') as csvfile:
         writer = csv.writer(csvfile)
-        for i in range(len(issues)):
+        for i in range(length):
             writer.writerow([args.name, issues[i], descriptions[i]])
 
 
