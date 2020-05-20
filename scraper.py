@@ -37,16 +37,37 @@ parser.add_argument(
     action='store_true',
     help="Force write to csv"
 )
+
+parser.add_argument(
+    "-i",
+    "--invalid",
+    dest="invalid",
+    action='store_true',
+    help="Force to make invalid HTTP request"
+)
+
 args = parser.parse_args()
 pp = pprint.PrettyPrinter(indent=4)
-
 
 # Generates beautiful soup object
 def get_page_soup(url):
     headers = {
         "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36"
     }
-    page = requests.get(url, headers=headers).content
+    if not args.invalid:
+        page = requests.get(url, headers=headers).content
+    else:
+        page = requests.get(url, headers=headers,verify=False).content
+
+
+    #except:
+    #    if cont_invalid == 'N':
+    #        print("HTTP Request Failed...")
+    #        cont_invalid = input("Would you like to continue by making an unverified connection? [Y/N] ")
+    #    if cont_invalid == 'Y':
+    #            page = requests.get(url, headers=headers,verify=False).content
+    #    else:
+    #        exit(1)
     return BeautifulSoup(page, "html.parser")
 
 
