@@ -59,15 +59,6 @@ def get_page_soup(url):
     else:
         page = requests.get(url, headers=headers,verify=False).content
 
-
-    #except:
-    #    if cont_invalid == 'N':
-    #        print("HTTP Request Failed...")
-    #        cont_invalid = input("Would you like to continue by making an unverified connection? [Y/N] ")
-    #    if cont_invalid == 'Y':
-    #            page = requests.get(url, headers=headers,verify=False).content
-    #    else:
-    #        exit(1)
     return BeautifulSoup(page, "html.parser")
 
 
