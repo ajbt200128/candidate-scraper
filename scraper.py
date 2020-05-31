@@ -160,7 +160,8 @@ def main():
     with open(filename,'w') as csvfile:
         writer = csv.writer(csvfile)
         for i in range(length):
-            writer.writerow([args.name.encode('utf-8'), issues[i].encode('utf-8'), descriptions[i].encode('utf-8'),args.url.encode('utf-8')])
+            writer.writerow([args.name, issues[i], descriptions[i], args.url])
+        writer.writerow(["","","",""])
 
 
 main()
