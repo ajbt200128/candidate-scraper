@@ -2,6 +2,7 @@
 import argparse
 import csv
 import pprint
+import ftfy
 
 import requests
 from bs4 import BeautifulSoup
@@ -160,7 +161,8 @@ def main():
     with open(filename,'w') as csvfile:
         writer = csv.writer(csvfile)
         for i in range(length):
-            writer.writerow([args.name, issues[i], descriptions[i], args.url])
+            writer.writerow([args.name, ftfy.fix_text(issues[i]), 
+                ftfy.fix_text(descriptions[i]), args.url])
         writer.writerow(["","","",""])
 
 
