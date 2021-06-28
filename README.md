@@ -15,7 +15,6 @@ Clone this repository, then cd to the directory and run
 ```bash
 pipenv install
 chmod 777 scraper.py
-mkdir out
 ```
 
 Start the virtual environment before running the script with
