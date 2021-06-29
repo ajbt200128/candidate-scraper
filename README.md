@@ -10,23 +10,29 @@
 
 # Installation<a id="sec-1"></a>
 
-Clone this repository, then inside run
+Clone this repository, then cd to the directory and run
 
 ```bash
 pipenv install
 chmod 777 scraper.py
 ```
 
+Start the virtual environment before running the script with
+
+```bash
+pipenv shell
+```
+
 # Basic Usage<a id="sec-2"></a>
 
 ```bash
-./scraper.py [-fl FOLLOW_LINK] N U I D
+./scraper.py [-fl FOLLOW_LINK] N U I D [-o OUTPUT_PATH]
 ```
 
 Where:
 
 | Parameter          | Description                                                           | Example                                   |
-|------------------ |--------------------------------------------------------------------- |----------------------------------------- |
+|------------------  |---------------------------------------------------------------------  |-----------------------------------------  |
 | N                  | Is the name of a candidate                                            | "Pete Aguilar"                            |
 | U                  | Is the URL                                                            | "<https://peteaguilar.com/on-the-issues>" |
 | I                  | Is the Issue HTML pattern                                             | "div#not-secret>h3"                       |
@@ -34,6 +40,7 @@ Where:
 | -fl [FOLLOW\_LINK] | Is the Description Page link HTML pattern (optional)                  | "div#tiles>div>a"                         |
 | -f                 | Force the write of whatever issues/descriptions were found (optional) | -f                                        |
 | -i                 | Connect to insecure websites aka http not https (optional)            | -i                                        |
+| -o [OUTPUT\_PATH]  | Specify the location of the output file; default is out/ (optional)   | -o "./scraped/"                           |
 
 The full command looks like this:
 

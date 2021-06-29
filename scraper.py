@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 import argparse
 import csv
 import pprint
@@ -6,10 +6,13 @@ import ftfy
 
 import requests
 from bs4 import BeautifulSoup
+from pathlib import Path
 
 parser = argparse.ArgumentParser(description="Scrapes candidate issue info")
 parser.add_argument("name", metavar="N", type=str, help="Name of candidate")
 parser.add_argument("url", metavar="U", type=str, help="URL of candidate")
+parser.add_argument("-o", "--outfile", dest='outfile', type=str, required=False, help="location of the output file (default is out)")
+
 parser.add_argument(
     "issue_pattern",
     metavar="I",
@@ -147,7 +150,15 @@ def main():
     if len(issues) != len(descriptions) and not args.force:
         print(f"Error: Issue length({len(issues)}) does not match description length({len(descriptions)})")
         return
-    filename = 'out/'+args.name.replace(' ', '_') + '.csv'
+
+    if(args.outfile):
+        path = args.outfile
+    else:
+        path = 'out'
+		
+    Path(path).mkdir(parents=True, exist_ok=True)
+
+    filename = path + "/" + args.name.replace(' ', '_') + '.csv'
     length = len(issues)
     if len(issues) < len(descriptions):
         length = len(descriptions)
